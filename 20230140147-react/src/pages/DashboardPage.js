@@ -33,31 +33,26 @@ function DashboardPage() {
       .catch((err) => console.error(err));
   }, []);
 
-  // Update jam setiap detik
+  // Update jam realtime
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
+    const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Generate motivasi random
   useEffect(() => {
     setMotivasi(
       daftarMotivasi[Math.floor(Math.random() * daftarMotivasi.length)]
     );
   }, []);
 
-  // Dark Mode Toggle
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
-  // Logout
+  // ✅ handleLogout sesuai instruksi: hapus token lalu redirect
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    localStorage.removeItem("token"); // hanya menghapus token
+    navigate("/login"); // redirect ke login
   };
 
   return (
@@ -72,7 +67,6 @@ function DashboardPage() {
           <h1 className="text-3xl font-bold">Dashboard</h1>
 
           <div className="flex gap-3">
-            {/* Dark Mode Button */}
             <button
               onClick={toggleDarkMode}
               className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
@@ -80,7 +74,6 @@ function DashboardPage() {
               {darkMode ? "Light Mode ☀️" : "Dark Mode 🌙"}
             </button>
 
-            {/* Logout */}
             <button
               onClick={handleLogout}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
@@ -106,7 +99,7 @@ function DashboardPage() {
           "{motivasi}"
         </p>
 
-        {/* Pesan dari backend */}
+        {/* Pesan backend */}
         <div className="mt-4 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg shadow">
           <p className="text-gray-700 dark:text-gray-200">
             Pesan dari server backend:{" "}
