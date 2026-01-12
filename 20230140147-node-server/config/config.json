@@ -1,24 +1,26 @@
 {
+  "development": {
+    "username": "root",
+    "password": "Rifqy2004_",
+    "database": "Praktikum_47_paw",
+    "host": "127.0.0.1",
+    "port": 3309,
+    "dialect": "mysql"
+  },
   "test": {
     "username": "root",
     "password": "Rifqy2004_",
-    "database": "praktikum_147_db",
+    "database": "Praktikum_47_paw",
     "host": "127.0.0.1",
+    "port": 3309,
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": "Rifqy2004_",
-    "database": "praktikum_147_db",
+    "database": "Praktikum_47_paw",
     "host": "127.0.0.1",
+    "port": 3309,
     "dialect": "mysql"
-  },
-  "development": {
-    "username": "root",
-    "password": "Rifqy2004_",
-    "database": "praktikum_147_db",
-    "host": "127.0.0.1",
-    "dialect": "mysql",
-    "port": 3309
   }
 }

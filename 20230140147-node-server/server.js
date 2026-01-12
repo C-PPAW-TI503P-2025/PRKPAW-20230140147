@@ -1,26 +1,90 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
+import db from "./models/index.js";
+
+// Router
+import bookRouter from "./router/book.js";
+import presensiRouter from "./router/presensi.js";
+import reportRouter from "./router/reports.js";
+import authRouter from "./router/auth.js";
+import iotRouter from "./router/iot.js"; // <-- Router IoT baru
 
 const app = express();
-const authRoutes = require("./routes/auth");
+const PORT = 3000;
 
-// ✅ Izinkan akses dari React (localhost:3000)
+// ========================
+// FIX __dirname (ESM)
+// ========================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ========================
+// MIDDLEWARE GLOBAL
+// ========================
+app.use(morgan("dev"));
+app.use(cors());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
 app.use(
-  cors({
-    origin: "http://localhost:3000", // alamat frontend
-    methods: ["GET", "POST"],
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false,
   })
 );
 
+// ========================
+// STATIC FOLDER UPLOADS
+// ========================
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(express.json());
-app.use("/api/auth", authRoutes);
+// ========================
+// ROUTER
+// ========================
+app.use("/api/auth", authRouter);
+app.use("/api/presensi", presensiRouter);
+app.use("/api/reports", reportRouter);
+app.use("/api/book", bookRouter);
+app.use("/api/iot", iotRouter); // <-- IoT endpoint aktif
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello dari backend Node.js 🚀" });
+// ========================
+// 404 NOT FOUND HANDLER
+// ========================
+app.use((req, res) => {
+  return res.status(404).json({
+    message: "Endpoint tidak ditemukan.",
+  });
 });
 
-app.listen(5000, () => {
-  console.log("Server berjalan di http://localhost:5000");
+// ========================
+// GLOBAL ERROR HANDLER
+// ========================
+app.use((err, req, res, next) => {
+  console.error("SERVER ERROR:", err.message);
+  return res.status(500).json({
+    message: "Terjadi kesalahan pada server.",
+    error: err.message,
+  });
 });
+
+// ========================
+// START SERVER
+// ========================
+const startServer = async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log("✅ Koneksi database berhasil.");
+
+    app.listen(PORT, () => {
+      console.log(`🌍 Server berjalan di http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Gagal koneksi database:", error.message);
+  }
+};
+
+startServer();

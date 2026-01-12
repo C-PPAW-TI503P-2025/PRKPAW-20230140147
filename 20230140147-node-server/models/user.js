@@ -1,17 +1,18 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+import { DataTypes, Model } from "sequelize";
+
+export default (sequelize) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // Definisikan relasi di sini jika ada
-      // Contoh: User.hasMany(models.Presensi, { foreignKey: 'userId' });
+      // Relasi One-to-Many: 1 User → Banyak Presensi
+      User.hasMany(models.Presensi, { 
+        foreignKey: "userId",
+        as: "presensi",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
     }
   }
+
   User.init(
     {
       nama: {
@@ -34,9 +35,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("mahasiswa", "admin"),
         allowNull: false,
         defaultValue: "mahasiswa",
-        validate: {
-          isIn: [["mahasiswa", "admin"]],
-        },
       },
     },
     {
@@ -44,5 +42,6 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "User",
     }
   );
+
   return User;
 };
